@@ -21,17 +21,12 @@ export const config = {
     callbacks: {
     async jwt({ token, account }) {
       if (account) {
-        console.log("GitHub Access Token:", account.access_token);
         token.accessToken = account.access_token;  // Store the GitHub access token
          // token.id = account.userId
       }
       return token;
     },
 
-// async session({ session, token}) {
-//     session.accessToken = token.accessToken
-//     return session
-//     }
     async session({ session, token }) {
       if (token?.accessToken) session.accessToken = token.accessToken
 

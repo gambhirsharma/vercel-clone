@@ -1,27 +1,27 @@
 'use client';
-import { getServerSession } from 'next-auth';
-import { config } from "@/utils/auth";
+
+import { Skeleton } from "@/components/ui/skeleton";
 import React from 'react';
 import { Button } from './ui/button';
 import { Lock, GitBranch, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+
+type repoType = {
+  id: number;
+  name: string;
+  full_name: string;
+  private: boolean;
+  updated_at: string;
+  default_branch: string;
+};
 
 const fetchGithubRepos = async () => {
-  const session = await getServerSession(config);
-  const user = session?.user;
-
-  if (session?.accessToken) {
-    const response = await fetch("https://api.github.com/user/repos?type=owner", {
-      headers: {
-        Authorization: `Bearer ${session?.accessToken}`,
-      },
-    });
-    const repos = await response.json();
-    return repos;
-  } else {
-    throw new Error("No access token found");
-  }
+  const res = await fetch('/api/github-repos');
+  if (!res.ok) throw new Error("Failed to fetch repositories");
+  return res.json();
 };
+
 
 const formatTimeAgo = (dateString: string) => {
   const date = new Date(dateString);
@@ -35,14 +35,21 @@ const formatTimeAgo = (dateString: string) => {
 };
 
 const RepoList: React.FC = () => {
-  const [repos, setRepos] = React.useState<any[]>([]);
+  const [repos, setRepos] = React.useState<repoType[]>([]);
   const [error, setError] = React.useState<string | null>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
   const router = useRouter();
 
   React.useEffect(() => {
     fetchGithubRepos()
-      .then(setRepos)
-      .catch((err) => setError(err.message));
+      .then((data) => {
+        setRepos(data);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setIsLoading(false);
+      });
   }, []);
 
   // For demo, static user
@@ -60,7 +67,7 @@ const RepoList: React.FC = () => {
       <h2 className="text-lg font-semibold mb-4">Import Git Repository</h2>
       <div className="flex items-center gap-2 mb-4">
         <div className="flex items-center gap-2 bg-gray-100 rounded px-3 py-1">
-          <img src={user.avatar} alt={user.name} className="w-6 h-6 rounded-full" />
+          <Image src={user.avatar} alt={user.name} className="w-6 h-6 rounded-full" height={100} width={100} />
           <span className="text-sm font-medium">{user.name}</span>
           <GitBranch className="ml-1 text-gray-400 w-4 h-4" />
         </div>
@@ -74,7 +81,21 @@ const RepoList: React.FC = () => {
         </div>
       </div>
       <div className="divide-y divide-gray-100">
-        {repos.slice(0, 5).map((repo: any) => (
+        {
+          isLoading
+            ? Array.from({ length: 5 }).map((_, idx) => (
+              <div key={idx} className="flex items-center justify-between py-3">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="w-6 h-6 rounded-full" />
+                  <div className="space-y-1">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-24" />
+                  </div>
+                </div>
+                <Skeleton className="h-8 w-20 rounded" />
+              </div>
+            ))
+            : repos.slice(0, 5).map((repo) => (
           <div key={repo.id} className="flex items-center justify-between py-3">
             <div className="flex items-center gap-3">
               {/* Placeholder for repo icon */}
@@ -84,7 +105,11 @@ const RepoList: React.FC = () => {
               <div>
                 <div className="flex items-center gap-1">
                   <span className="font-medium text-gray-900 text-sm">{repo.name}</span>
-                  {repo.private && <Lock className="text-gray-400 ml-1 w-4 h-4" title="Private" />}
+                  {repo.private && (
+                    <Lock className="text-gray-400 ml-1 w-4 h-4">
+                      <title>Private</title>
+                    </Lock>
+                  )}
                 </div>
                 <span className="text-xs text-gray-400">{formatTimeAgo(repo.updated_at)}</span>
               </div>

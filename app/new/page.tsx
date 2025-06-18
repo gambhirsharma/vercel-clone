@@ -23,7 +23,7 @@ const NewPage: React.FC = async () => {
   return (
     <div className="min-h-screen bg-white text-gray-900 flex flex-col items-center justify-center px-4 py-8 relative">
       <main className="w-full max-w-5xl mx-auto flex flex-col items-center mt-8">
-        <h1 className="text-4xl sm:text-5xl font-bold mb-2 text-center">Let's build something new.</h1>
+        <h1 className="text-4xl sm:text-5xl font-bold mb-2 text-center">Let&apos;s build something new.</h1>
         <p className="text-lg text-gray-500 mb-8 text-center max-w-2xl">To deploy a new Project, import an existing Git Repository or get started with one of our Templates.</p>
         {/* Search Bar */}
         <div className="w-full max-w-2xl flex items-center gap-2 mb-10">

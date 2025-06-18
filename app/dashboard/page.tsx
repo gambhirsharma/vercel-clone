@@ -2,9 +2,8 @@ import React from 'react';
 import {config} from "@/utils/auth";
 import { getServerSession } from 'next-auth/next';
 
-interface DashBoardProps {
-  
-}
+// Define a minimal type for GitHub repos
+type Repo = { id: number; name: string };
 
 const fetchGithubRepos = async () => {
   const session = await getServerSession(config);
@@ -25,22 +24,28 @@ const fetchGithubRepos = async () => {
   }
 };
 
-const DashBoard: React.FC<DashBoardProps> = async ({  }) => {
+const DashBoard: React.FC = async ({  }) => {
   try {
     const repos = await fetchGithubRepos();
 
     return (
       <div>
         <ul>
-          {repos.map((repo: any) => (
+          {repos.map((repo: Repo) => (
             <li key={repo.id}>{repo.name}</li>
           ))}
         </ul>
       </div>
     );
   }
-  catch (error) {
-    return <div>Error: {error.message}</div>;
+catch (error: unknown) {
+    let message = 'An unknown error occurred';
+
+    if (error instanceof Error) {
+      message = error.message;
+    }
+
+    return <div>Error: {message}</div>;
   }
 };
 
