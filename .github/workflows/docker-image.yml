@@ -32,3 +32,15 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/vercel-clone-front-end:${{ env.SHORT_SHA }}
+
+      - name: config Git Author
+        run: | 
+          git config --local user.email "gambhir786191ss@gmail.com"
+          git config --local user.name "gambhirsharma"
+      
+      - name: Update Helm Chart with new image tag
+        run: | 
+          sed i "s/tag:.*/tag: ${{ env.SHORT_SHA }}/" ./charts/vercel-clone/values.yaml
+          git add ./charts/vercel-clone/values.yaml
+          git commit -m "Updated image tag to ${{ env.SHORT_SHA }}"
+          git push 
