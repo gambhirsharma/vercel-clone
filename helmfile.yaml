@@ -1,5 +1,18 @@
+repositories:
+  - name: argo
+    url: https://argoproj.github.io/argo-helm
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
 releases:
+
   - name: vercel-clone
-    namespace: font-end
+    namespace: front-end
     chart: ./charts/vercel-clone
-    installed: true
+    installed: false
+
+  - name: argocd
+    namespace: argocd
+    chart: argo/argo-cd
+    version: 5.21.0
+    installed: false
