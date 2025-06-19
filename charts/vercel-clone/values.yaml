@@ -8,7 +8,7 @@ replicaCount: 1
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
   repository: gambhir/vercel-clone-front-end
-  tag: 220d9b6
+  tag: c5f47bd
   # This sets the pull policy for images.
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
